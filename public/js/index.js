@@ -53,7 +53,7 @@ document.getElementById('create').addEventListener('click', function(e){
     const options = { 
         method: 'POST',
         headers: {'content-type': 'application/json'},
-        body: JSON.stringify({'quote':`${quote}`,'author':`${author}`})
+        body: JSON.stringify({'quote':quote,'author':author})
     };
 
     fetch('/quote/create',options);
@@ -69,7 +69,7 @@ document.getElementById('delete').addEventListener('click', function(e){
     const options = { 
         method: 'DELETE',
         headers: {'content-type': 'application/json'},
-        body: JSON.stringify({'id':`${id}`})
+        body: JSON.stringify({'id':id})
     };
 
     fetch('/quote/delete',options);
@@ -88,7 +88,7 @@ document.getElementById('update').addEventListener('click', function(e){
     const options = { 
         method: 'PUT',
         headers: {'content-type': 'application/json'},
-        body: JSON.stringify({'id':`${id}`,'quote':`${quote}`,'author':`${author}`})
+        body: JSON.stringify({'id':id,'quote':quote,'author':author})
     };
 
     fetch('/quote/update',options);
