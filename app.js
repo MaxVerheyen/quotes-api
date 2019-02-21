@@ -4,7 +4,7 @@ const mongoose    = require("mongoose");
 const bodyParser  = require("body-parser");
 const cors        = require('cors');
 
-var dotenv        = require('dotenv');
+const dotenv        = require('dotenv');
 dotenv.config();
 
 // initialise express() inside of your app variable

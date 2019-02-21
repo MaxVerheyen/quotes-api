@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>max-quotes</title>
+        <meta quote="description" content="">
+        <meta quote="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" type="image/png" href="quote_app/public/img/tag.png"/>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+        <style>
+            html, body{
+                background-color: #131313;
+                font-family: 'Roboto', sans-serif;
+            }
+            #content{
+                color: #FFF;
+                font-size: 1.4em;
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            };
+            
+            #content p:nth-child(odd){
+                margin: 40px 0;
+            }
+            
+            #content p:nth-child(2), #content p:nth-child(3){
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <form>
+            <input  id="quote" placeholder="Quote" type="text">
+            <input  id="author" placeholder="Author" type="text">
+            <button id="create">Create</button>
+            <select id="quotes"></select>
+            <button id="read">Read</button>
+            <button id="update">Update</button>
+            <button id="delete">Delete</button>
+            <div id="content">
+                <p id="currentQuote"></p>
+                <p>&lt;/&gt;</p>
+                <p id="currentAuthor"></p>
+            </div>
+        <form>
+        <script>
+            window.onload = function(){
+                fetch('https://max-quotes.herokuapp.com/quotes',{ method: 'GET' })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(myJson) {
+                        //console.log(myJson);
+                        for(let i = 0; i < myJson.length; i++){
+                            let select = document.getElementById('quotes');
+                            let option = document.createElement('option');
+                            option.setAttribute('id', myJson[i]._id);
+                            option.innerHTML = `"${myJson[i].quote}" by "${myJson[i].author}"`;
+                            select.append(option);
+                        };
+            
+                        let increment = 0;
+                        loop = function(){
+                            if(increment < myJson.length){
+                                increment++;
+                            }else if(increment == myJson.length){
+                                increment = 1;
+                            };
+                            //console.log(increment-1);
+                            currentQuote.innerHTML = `"${myJson[increment-1].quote}"`;
+                            currentAuthor.innerHTML = myJson[increment-1].author;
+                            setTimeout(function(){ loop(); }, 5000);
+                        };
+                        loop();
+                    });
+            };
+            
+            document.getElementById('quotes').addEventListener('change', function(){
+                let selected = this.selectedIndex;
+                let string = quotes[selected].innerHTML;
+                let split = string.split('"');
+                document.getElementById('quote').value = split[1];
+                document.getElementById('author').value = split[3];
+            });
+            
+            document.getElementById('create').addEventListener('click', function(e){
+                //e.preventDefault();
+            
+                let quote = document.getElementById('quote').value;
+                let author = document.getElementById('author').value;
+            
+                if (quote == ""){
+                    quote = "Unknown Quote";
+                };
+                if (author == ""){
+                    author = "Unknown Author";
+                };
+            
+                const options = { 
+                    method: 'POST',
+                    headers: {'content-type': 'application/json'},
+                    body: JSON.stringify({'quote':`${quote}`,'author':`${author}`})
+                };
+            
+                fetch('https://max-quotes.herokuapp.com/quote/create',options);
+            });
+            
+            document.getElementById('delete').addEventListener('click', function(e){
+                //e.preventDefault();
+            
+                let quotes = document.getElementById('quotes');
+                let selected = quotes.selectedIndex;
+                let id = quotes[selected].getAttribute('id');
+            
+                const options = { 
+                    method: 'DELETE',
+                    headers: {'content-type': 'application/json'},
+                    body: JSON.stringify({'id':`${id}`})
+                };
+            
+                fetch('https://max-quotes.herokuapp.com/quote/delete',options);
+            });
+            
+            document.getElementById('update').addEventListener('click', function(e){
+                //e.preventDefault();
+            
+                let quotes = document.getElementById('quotes');
+                let selected = quotes.selectedIndex;
+                let id = quotes[selected].getAttribute('id');
+            
+                let quote = document.getElementById('quote').value;
+                let author = document.getElementById('author').value;
+            
+                const options = { 
+                    method: 'PUT',
+                    headers: {'content-type': 'application/json'},
+                    body: JSON.stringify({'id':`${id}`,'quote':`${quote}`,'author':`${author}`})
+                };
+            
+                fetch('https://max-quotes.herokuapp.com/quote/update',options);
+            });
+            
+            document.getElementById('read').addEventListener('click', function(e){
+                e.preventDefault();
+            
+                let quotes = document.getElementById('quotes');
+                let selected = quotes.selectedIndex;
+                let id = quotes[selected].getAttribute('id');
+            
+                fetch(`https://max-quotes.herokuapp.com/quote/read?id=${id}`,{ method: 'GET' })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(myJson) {
+                        console.log(myJson);
+                    });
+            });
+        </script>
+    </body>
+</html>
