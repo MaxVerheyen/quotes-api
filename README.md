@@ -1,5 +1,5 @@
 # quotes
-https://max-quotes.herokuapp.com/
+https://maxverheyen.github.io/quotes-api/
 
 or
 
